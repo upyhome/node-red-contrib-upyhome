@@ -1,0 +1,22 @@
+{
+    "name" : "node-red-contrib-upyhome",
+    "version": "0.0.1-beta.1",
+    "license": "MIT",
+    "keywords": [
+        "node-red",
+        "micropython",
+        "repl",
+        "home automation",
+        "websocket"
+      ],
+    "node-red" : {
+        "nodes": {
+            "uph-client": "uph-client/uph-client.js",
+            "uph-status": "uph-status/uph-status.js",
+            "uph-input": "uph-input/uph-input.js",
+            "uph-output": "uph-output/uph-output.js",
+            "uph-di": "uph-di/uph-di.js",
+            "uph-do": "uph-do/uph-do.js"
+        }
+    }
+}
