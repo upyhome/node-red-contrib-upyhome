@@ -1,13 +1,17 @@
+
+
+
 module.exports = function(RED) {
     "use strict";
 
-    function UpyhomeStatusNode(config) {
+    function upyhomeDeviceNode(config) {
 
         RED.nodes.createNode(this, config);
         var node = this;
         this.clientConfig = RED.nodes.getNode(config.client);
+        this.domain = config.domain;
         if (this.clientConfig) {
-            this.clientConfig.registerSatusNode(this);
+            this.clientConfig.registerHandlerNode(this.domain, null, this);
             // TODO: nls
             this.clientConfig.on('opened', function(event) {
                 node.status({
@@ -37,13 +41,30 @@ module.exports = function(RED) {
         } else {
             this.error(RED._("websocket.errors.missing-conf"));
         }
-        this.on('close', function() {
-            if (node.clientConfig) {
-                node.clientConfig.removeSatusNode(node);
+        node.on('close', function(removed, done) {
+            if(removed) {
+                if (node.clientConfig) {
+                    node.clientConfig.unregisterHandlerNode(node.domain, null, this);
+                }
             }
             node.status({});
+            done();
+        });
+        node.on('input', function(msg, send, done) {
+            if(msg.stop) {
+                node.clientConfig.stopConnection();
+            } else if (msg.start) {
+                node.clientConfig.startConnection();
+            } else if (msg.status) {
+                send = send || function() { node.send.apply(node,arguments) }
+                msg.payload = node.clientConfig.isAlive;
+                send(msg);
+            }
+            if (done) {
+                done();
+            }
         });
     }
 
-    RED.nodes.registerType("uph-status", UpyhomeStatusNode);
+    RED.nodes.registerType("device", upyhomeDeviceNode);
 }

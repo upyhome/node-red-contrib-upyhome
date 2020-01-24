@@ -1,16 +1,13 @@
 module.exports = function(RED) {
-
     "use strict";
-    function UpyhoneOutNode(config) {
-        
+
+    function upyhomeCommandNode(config) {
+
         RED.nodes.createNode(this, config);
         var node = this;
-
         this.clientConfig = RED.nodes.getNode(config.client);
-        if (!this.clientConfig) {
-            return this.error(RED._("websocket.errors.missing-conf"));
-        }
-        else {
+        this.command = config.command;
+        if (this.clientConfig) {
             // TODO: nls
             this.clientConfig.on('opened', function(event) {
                 node.status({
@@ -24,7 +21,7 @@ module.exports = function(RED) {
                     fill:"red",shape:"ring",text:"common.status.error",
                     event:"error",
                     _session: {type:"websocket",id:event.id}
-                })
+                });
             });
             this.clientConfig.on('closed', function(event) {
                 var status;
@@ -37,22 +34,22 @@ module.exports = function(RED) {
                 status._session = {type:"websocket",id:event.id}
                 node.status(status);
             });
+        } else {
+            this.error(RED._("websocket.errors.missing-conf"));
         }
-        this.on("input", function(msg, nodeSend, nodeDone) {
-            var payload;
-            if (!Buffer.isBuffer(msg.payload)) { // if it's not a buffer make sure it's a string.
-                payload = RED.util.ensureString(msg.payload);
+        node.on('close', function(removed, done) {
+            if(removed) {
+                if (node.clientConfig) {
+                    //node.clientConfig.unregisterHandlerNode(node.domain, null, this);
+                }
             }
-            //node.debug(payload);     
-            if (payload) {
-                this.clientConfig.sendRaw(payload);
-            }
-            nodeDone();
-        });
-        this.on('close', function() {
             node.status({});
+            done();
+        });
+        node.on('input', function(msg, send, done) {
+            
         });
     }
-    RED.nodes.registerType("uph-output", UpyhoneOutNode);
 
+    RED.nodes.registerType("command", upyhomeCommandNode);
 }

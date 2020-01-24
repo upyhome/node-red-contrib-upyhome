@@ -1,0 +1,55 @@
+<script type="text/html" data-template-name="uph-value">
+
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]common.label.name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-client"><i class="fa fa-bookmark"></i> Device</label>
+        <input type="text" id="node-input-client">
+    </div>
+    <div class="form-row">
+        <label for="node-input-domain"><i class="fa fa-dot-circle-o"></i> </label>
+        <select id="node-input-domain">
+            <option value="di">Digital input</option>
+            <option value="do">Digital output</option>
+            <option value="custom">Custom</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-custom"><i class="fa fa-bookmark"></i> Custom domain</label>
+        <input type="text" id="node-input-custom">
+    </div>
+    <div class="form-row">
+        <label for="node-input-identifier"><i class="fa fa-bookmark"></i> Identifier</label>
+        <input type="text" id="node-input-inentifier">
+    </div>
+</script>
+
+<script type="text/javascript">
+
+
+    RED.nodes.registerType('uph-di', {
+        category: 'upyhome',
+        defaults: {
+            name: { value: "" },
+            client: { type: "uph-client", required: true },
+            domain: { value: "", required: true },
+            custom: { value: ""},
+            identifier: { value: "0", required: true }
+        },
+        color: "rgb(215, 215, 160)",
+        inputs: 0,
+        outputs: 3,
+        icon: "arrow-in.png",
+        labelStyle: function () {
+            return this.name ? "node_label_italic" : "";
+        },
+        label: function () {
+            var cli = RED.nodes.node(this.client);
+            return this.name || (cli ? cli.label() + ":di#" + this.number : "uph-di");
+        }
+    });
+
+</script>

@@ -1,0 +1,59 @@
+
+<script type="text/html" data-template-name="receiver">
+    <!-- Name -->
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <!-- Client -->
+    <div class="form-row">
+        <label for="node-input-client"><i class="fa fa-bookmark"></i> Device</label>
+        <input type="text" id="node-input-client">
+    </div>
+    <!-- Domain read only-->
+    <div class="form-row" id="form-input-domain">
+        <label for="node-input-domain"><i class="fa fa-bookmark"></i> Domain</label>
+        <input type="text" id="node-input-domain" placeholder="receiver" disabled="true">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="receiver">
+    <p>Receive all incomming messages (except ping response) from the device.</p>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload.msg<span class="property-type">string</span></dt>
+        <h3>The whole raw message received</h3>
+    <dl class="message-properties">
+        <dt>payload.sender<span class="property-type">string</span></dt>
+        <h3>The ip where the message come from</h3>
+    <p>The purpose of this node is for logging.</p>
+ </script>
+
+<script type="text/javascript">
+
+    RED.nodes.registerType('receiver', {
+        category: 'upyHome',
+        color: '#a6bbcf',
+        icon: "envelope.png",
+        align: "let",
+        defaults: {
+            name: { value: "" },
+            client: {value:"", type: "client", required: true },
+            domain: {value: "receiver"}
+        },
+        inputs: 0,
+        outputs: 1,
+        labelStyle: function () {
+            return this.name ? "node_label_italic" : "";
+        },
+        label: function () {
+            var cli = RED.nodes.node(this.client);
+            return this.name || (cli ? cli.label() + ":receiver" : "receiver");
+        },
+        outputLabels: ["raw message"],
+        oneditprepare: function() {
+            $("#form-input-domain").hide();
+        }
+    });
+
+</script>

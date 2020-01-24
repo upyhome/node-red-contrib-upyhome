@@ -1,0 +1,146 @@
+<script type="text/html" data-template-name="client">
+    <!-- Name -->
+<div class="form-row">
+    <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-config-input-name" placeholder="upyhome#">
+</div>
+<!-- IP -->
+<div class="form-row">
+    <label for="node-config-input-ip"><i class="fa fa-bookmark"></i> IP</label>
+    <input id="node-config-input-ip" type="text" placeholder="192.168.4.1">
+</div>
+<!-- Port -->
+<div class="form-row">
+    <label for="node-config-input-port"><i class="fa fa-bookmark"></i> Port</label>
+    <input id="node-config-input-port" type="text" placeholder="8266">
+</div>
+<!-- Password -->
+<div class="form-row">
+    <label for="node-config-input-passord"><i class="fa fa-bookmark"></i> Password</label>
+    <input id="node-config-input-password" type="text" placeholder="password">
+</div>
+<!-- Automatic Ping -->
+<div class="form-row">
+    <label for="node-config-input-autoping" style="width:70%;"></i> Automatic ping?</label>
+    <input type="checkbox" checked id="node-config-input-autoping" style="display:inline-block; width:auto; vertical-align:top;" />
+    
+</div>
+<!-- Queue -->
+<div class="form-row">
+    <label for="node-config-input-queue" style="width:70%;"></i> Internal queue?</label>
+    <input type="checkbox" checked id="node-config-input-queue" style="display:inline-block; width:auto; vertical-align:top;" />   
+</div>
+<!-- Init -->
+<div class="form-row" style="margin-bottom: 0px;">
+    <label for="node-config-input-init"><i class="fa fa-wrench"></i> Startup code</label>
+    <input type="hidden" id="node-config-input-init" autofocus="autofocus">
+</div>
+<!-- Editor -->
+<div class="form-row node-text-editor-row" style="position:relative">
+    <div style="position: absolute; right:0; bottom:calc(100% + 3px);"><button id="node-function-expand-js"
+            class="red-ui-button red-ui-button-small"><i class="fa fa-expand"></i></button></div>
+    <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-init-editor"></div>
+</div>
+</script>
+
+<!-- upyHome websocket configuration -->
+<script type="text/javascript">
+
+    RED.nodes.registerType('client', {
+        category: 'config',
+        defaults: {
+            name: { value: "" },
+            ip: { value: "192.168.1.4", required: true },
+            port: { value: "8266", required: true },
+            password: { value: ""},
+            autoping: {value: true },
+            queue: {value: true },
+            init: { value: "" }
+        },
+        /*credentials: {
+            password: {type:"password"}
+        },*/
+        inputs: 0,
+        outputs: 0,
+        label: function () {
+            return this.name || this.ip;
+        },
+        oneditprepare: function () {
+            console.log("oneditprepare");
+            var that = this;
+
+            this.editor = RED.editor.createEditor({
+                id: 'node-input-init-editor',
+                mode: 'ace/mode/python',
+                value: $("#node-config-input-init").val(),
+                globals: {
+                    msg: true,
+                    context: true,
+                    RED: true,
+                    util: true,
+                    flow: true,
+                    global: true,
+                    console: true,
+                    Buffer: true,
+                    setTimeout: true,
+                    clearTimeout: true,
+                    setInterval: true,
+                    clearInterval: true
+                }
+            });
+
+            RED.library.create({
+                url: "functions", // where to get the data from
+                type: "function", // the type of object the library is for
+                editor: this.editor, // the field name the main text body goes to
+                mode: "ace/mode/python",
+                fields: ['name'],
+                ext: "py"
+            });
+            this.editor.focus();
+
+            RED.popover.tooltip($("#node-function-expand-js"), RED._("node-red:common.label.expand"));
+
+            $("#node-function-expand-js").on("click", function (e) {
+                e.preventDefault();
+                var value = that.editor.getValue();
+                RED.editor.editJavaScript({
+                    value: value,
+                    width: "Infinity",
+                    cursor: that.editor.getCursorPosition(),
+                    mode: "ace/mode/python",
+                    complete: function (v, cursor) {
+                        that.editor.setValue(v, -1);
+                        that.editor.gotoLine(cursor.row + 1, cursor.column, false);
+                        setTimeout(function () {
+                            that.editor.focus();
+                        }, 300);
+                    }
+                })
+            })
+        },
+        oneditsave: function () {
+            console.log("oneditsave");
+
+            $("#node-config-input-init").val(this.editor.getValue());
+            this.editor.destroy();
+            delete this.editor;
+        },
+        oneditcancel: function () {
+            this.editor.destroy();
+            delete this.editor;
+        },
+        oneditresize: function (size) {
+            var rows = $("#dialog-form>div:not(.node-text-editor-row)");
+            var height = $("#dialog-form").height();
+            for (var i = 0; i < rows.length; i++) {
+                height -= $(rows[i]).outerHeight(true);
+            }
+            var editorRow = $("#dialog-form>div.node-text-editor-row");
+            height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")));
+            $(".node-text-editor").css("height", height + "px");
+            this.editor.resize();
+        }
+
+    });
+</script>

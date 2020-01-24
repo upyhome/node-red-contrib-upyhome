@@ -1,14 +1,15 @@
 module.exports = function(RED) {
     "use strict";
 
-    function UpyhomeDONode(config) {
+    function upyhomeDINode(config) {
 
         RED.nodes.createNode(this, config);
         var node = this;
         this.clientConfig = RED.nodes.getNode(config.client);
-        this.number = config.number;
+        this.domain = config.domain;
+        this.indentifier = config.indentifier;
         if (this.clientConfig) {
-            this.clientConfig.registerComponentNode("do", this.number, this);
+            this.clientConfig.registerHandlerNode(this.domain, this.indentifier, this);
             // TODO: nls
             this.clientConfig.on('opened', function(event) {
                 node.status({
@@ -38,13 +39,16 @@ module.exports = function(RED) {
         } else {
             this.error(RED._("websocket.errors.missing-conf"));
         }
-        this.on('close', function() {
-            if (node.clientConfig) {
-                node.clientConfig.unregisterComponentNode("do", node.number, node);
+        node.on('close', function(removed, done) {
+            if(removed) {
+                if (node.clientConfig) {
+                    node.clientConfig.unregisterHandlerNode(node.domain, node.indentifier, this);
+                }
             }
             node.status({});
+            done();
         });
     }
 
-    RED.nodes.registerType("uph-do", UpyhomeDONode);
+    RED.nodes.registerType("digital-input", upyhomeDINode);
 }
