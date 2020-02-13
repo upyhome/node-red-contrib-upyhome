@@ -13,14 +13,19 @@ At this early stage of development you can just control:
 
 Analog I/O, and drivers are planned.
 
-## upyHome client Node
+## Preparing the micropython device
+
+The device have to be flashed with a micropython firmware.
+
+
+### upyHome client Node
 
 It uses standard a websocket client, derived from the official node-red ws client.  
-It support automatic reconnection
+It support automatic reconnection.
 
-## upyHome digital input
+### upyHome digital input
 
-## upyHome digital output
+### upyHome digital output
 
 
 

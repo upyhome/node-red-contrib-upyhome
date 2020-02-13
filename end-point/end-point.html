@@ -1,0 +1,41 @@
+<script type="text/x-red" data-template-name="end-point">
+<!-- Device -->
+<div class="form-row">
+    <label for="node-input-device"><i class="fa fa-bookmark"></i> Device</label>
+    <input type="text" id="node-input-device">
+</div>
+<!-- Topic -->
+<div class="form-row">
+    <label for="node-input-topic"><i class="fa fa-tag"></i> Topic</label>
+    <input type="text" id="node-input-topic" placeholder="Topic">
+</div>
+</script>
+
+<!-- upyHome Proxy configuration -->
+<script type="text/javascript">
+    (function () {
+        RED.nodes.registerType('end-point', {
+            category: 'upyHome',
+            color: '#a6bbcf',
+            icon: "inject.png",
+            align: "right",
+            defaults: {
+                device: { value: "", type: "device", required: true },
+                topic: { value: "", required: true }
+            },
+            inputs: 1,
+            outputs: 0,
+            label: function () {
+                let text = this.topic || "end-point"               
+                if(this.device) {
+                    let dev = RED.nodes.node(this.device);
+                    text = (this.topic? this.topic+'@'+dev.label(): 'endpoint@'+dev.label())
+                }
+                return text;
+            },
+            labelStyle: function () {
+                return this.topic ? "node_label_italic" : "";
+            }
+        });
+    })();
+</script>

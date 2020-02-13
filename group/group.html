@@ -1,0 +1,37 @@
+<script type="text/x-red" data-template-name="group">
+<!-- Topic -->
+<div class="form-row">
+    <label for="node-input-topic"><i class="fa fa-tag"></i> Topic</label>
+    <input type="text" id="node-input-topic" placeholder="Topic">
+</div>
+<!-- Root -->
+<div class="form-row">
+    <label for="node-input-root" style="width:70%;"></i> Root?</label>
+    <input type="checkbox" checked id="node-input-root" style="display:inline-block; width:auto; vertical-align:top;" />
+</div>
+</script>
+
+<!-- upyHome Proxy configuration -->
+<script type="text/javascript">
+    (function () {
+        RED.nodes.registerType('group', {
+            category: 'upyHome',
+            category: 'upyHome',
+            color: '#a6bbcf',
+            icon: "template.png",
+            defaults: {
+                topic: { value: "", required: true },
+                root: { value: false }
+            },
+            inputs: 1,
+            outputs: 2,
+            label: function () {
+                let text = this.topic || "group"
+                return text;
+            },
+            labelStyle: function () {
+                return this.topic ? "node_label_italic" : "";
+            }
+        });
+    })();
+</script>

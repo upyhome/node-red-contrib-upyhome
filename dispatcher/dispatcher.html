@@ -1,0 +1,31 @@
+<script type="text/x-red" data-template-name="dispatcher">
+<!-- Topic -->
+<div class="form-row">
+    <label for="node-input-topic"><i class="fa fa-tag"></i> Topic</label>
+    <input type="text" id="node-input-topic" placeholder="Topic">
+</div>
+</script>
+<!-- Outputs -->
+<div class="form-row" style="margin-bottom: 0px">
+    <label for="node-input-outputs"><i class="fa fa-random"></i> <span
+            data-i18n="function.label.outputs"></span></label>
+    <input id="node-input-outputs" style="width: 60px;" value="1">
+</div>
+</script>
+<!-- upyHome Proxy configuration -->
+<script type="text/javascript">
+    (function () {
+        RED.nodes.registerType('dispatcher', {
+            category: 'upyHome',
+            defaults: {
+                topic: { value: "" },
+                outputs: { value: 1 },
+            },
+            inputs: 1,
+            outputs: 1,
+            label: function () {
+                return this.topic;
+            }
+        });
+    })();
+</script>
